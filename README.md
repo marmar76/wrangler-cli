@@ -25,7 +25,7 @@ Set `CLOUDFLARE_API_TOKEN` in your shell before running the command. Do not put 
 
 ## Deploy from Jenkins
 
-Start with [`Jenkinsfile.example`](Jenkinsfile.example). It builds an application and then deploys its output with Wrangler in the prebuilt container. Adjust the `environment` values and build command for your project:
+Start with the [Jenkinsfile example](https://github.com/marmar76/wrangler-cli/blob/main/Jenkinsfile.example). It builds an application and then deploys its output with Wrangler in the prebuilt container. Adjust the `environment` values and build command for your project:
 
 - `WRANGLER_IMAGE`: Docker Hub image and tag. The sample uses `marmar76/wrangler-cli:latest`.
 - `CLOUDFLARE_PAGES_PROJECT`: Pages project name.
@@ -58,4 +58,4 @@ Check your Wrangler configuration and Cloudflare account settings before deploym
 ## More information
 
 - [Cloudflare Wrangler documentation](https://developers.cloudflare.com/workers/wrangler/)
-- [`README_MAKER.md`](README_MAKER.md) and [`AGENTS.md`](AGENTS.md) contain development and maintainer guidance for this image.
+- [Repository source and maintainer guide](https://github.com/marmar76/wrangler-cli), including the Dockerfile, build workflow, and [`README_MAKER.md`](https://github.com/marmar76/wrangler-cli/blob/main/README_MAKER.md).
