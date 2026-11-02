@@ -1,0 +1,60 @@
+/*
+ * Generic Jenkins Declarative Pipeline example for deploying an already-built
+ * site or Worker with the Wrangler CLI container.
+ *
+ * Configure a Jenkins Secret text credential (default ID below) containing a
+ * Cloudflare API token with only the permissions required for your deployment.
+ * Adapt the build command, artifact directory, Wrangler command, and project
+ * arguments to your application. No notifications or agent labels are required.
+ */
+pipeline {
+    agent any
+
+    environment {
+        WRANGLER_IMAGE = 'marmar76/wrangler-cli:latest'
+        BUILD_IMAGE = 'oven/bun:slim'
+        BUILD_OUTPUT_DIR = 'dist'
+        // Set this to the Pages project name created in your Cloudflare account.
+        CLOUDFLARE_PAGES_PROJECT = 'YOUR_PAGES_PROJECT'
+        // Replace with the ID of your Jenkins Secret text credential.
+        CLOUDFLARE_TOKEN_CREDENTIAL = 'cloudflare-api-token'
+    }
+
+    stages {
+        stage('Build application') {
+            agent {
+                docker {
+                    image "${BUILD_IMAGE}"
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    set -eu
+                    bun install
+                    bun run build
+                '''
+            }
+        }
+
+        stage('Deploy with Wrangler') {
+            agent {
+                docker {
+                    image "${WRANGLER_IMAGE}"
+                    reuseNode true
+                }
+            }
+            steps {
+                withCredentials([string(
+                    credentialsId: "${CLOUDFLARE_TOKEN_CREDENTIAL}",
+                    variable: 'CLOUDFLARE_API_TOKEN'
+                )]) {
+                    sh '''
+                        set -eu
+                        wrangler pages deploy "${BUILD_OUTPUT_DIR}" --project-name="${CLOUDFLARE_PAGES_PROJECT}"
+                    '''
+                }
+            }
+        }
+    }
+}
