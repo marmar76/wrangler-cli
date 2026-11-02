@@ -9,7 +9,7 @@ This repository builds and publishes a Docker image containing Cloudflare Wrangl
 - `Dockerfile` installs the latest Wrangler release in a Bun Alpine image, removes optional image dependencies, and replaces `workerd` binaries with stubs to trim local development components. Do not claim that `wrangler dev` is supported by this trimmed image.
 - `build.sh` and `.github/workflows/publish-image.yml` build Docker images for `linux/amd64` and `linux/arm64` and push `marmar76/wrangler-cli:latest`. Treat both as external publish actions. Do not run or dispatch them unless publishing is explicitly requested and authorized. The GitHub workflow uses repository secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
 - `Jenkinsfile.example` is illustrative only. Keep it broadly reusable and do not include real credentials, private URLs, or organization-specific notifications. A configurable placeholder Pages project name and the published `marmar76/wrangler-cli:latest` image are intentional example values. Use Jenkins credentials binding for secrets.
-- Keep the GitHub Actions build dependency-refreshing: it installs `wrangler@latest` and publishes the multi-platform image on its scheduled, manual, and selected source-change triggers.
+- Keep the GitHub Actions build dependency-refreshing: it installs `wrangler@latest` and publishes `latest`, the exact resolved Wrangler version, and its major.minor tag for both platforms on scheduled, manual, and selected source-change triggers. Include OCI metadata labels for source and dependency version.
 
 ## Change practices
 

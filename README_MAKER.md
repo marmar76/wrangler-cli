@@ -33,12 +33,18 @@ docker run --rm --user 10001:10001 wrangler-cli:local --version
 
 The checked-in [`build.sh`](build.sh) runs Docker Buildx for `linux/amd64` and `linux/arm64` and **pushes** `marmar76/wrangler-cli:latest` to Docker Hub. It is a publishing action, not a local test. Run it only when publishing is intended and registry access is configured. A suitable Buildx builder may need native workers or emulation for both architectures.
 
-The GitHub Actions workflow at [`.github/workflows/publish-image.yml`](.github/workflows/publish-image.yml) also builds and publishes this multi-platform image. It runs weekly, when the Dockerfile or workflow changes on `main`, or when manually dispatched. It installs `wrangler@latest` during every build, so the scheduled run refreshes the image as upstream Wrangler releases change. Configure these repository Actions secrets before enabling publishing:
+The GitHub Actions workflow at [`.github/workflows/publish-image.yml`](.github/workflows/publish-image.yml) also builds and publishes this multi-platform image. It runs weekly, when the Dockerfile or workflow changes on `main`, or when manually dispatched. It installs `wrangler@latest` during every build, so the scheduled run refreshes the image as upstream Wrangler releases change. For Wrangler version `4.156.1`, for example, it publishes:
+
+- `marmar76/wrangler-cli:latest`: newest scheduled or manually/source-triggered build.
+- `marmar76/wrangler-cli:4.156.1`: exact Wrangler release, immutable unless rebuilt with the same dependency version.
+- `marmar76/wrangler-cli:4.156`: latest image built with Wrangler 4.156.x; this can move when the Bun base image or other dependencies are refreshed.
+
+The workflow adds OCI labels for the Wrangler version, source repository, and source revision. Bun is deliberately not part of the tag: Wrangler is the user-facing version, while the Bun base image may be refreshed independently. If you change the tagging rule, update the examples below and Jenkins configuration as needed. Configure these repository Actions secrets before enabling publishing:
 
 - `DOCKERHUB_USERNAME`: Docker Hub account username.
 - `DOCKERHUB_TOKEN`: Docker Hub access token with permission to push to `marmar76/wrangler-cli`.
 
-The workflow uses GitHub's cache for build layers to make repeated refreshes quicker. It publishes the `latest` tag only; to publish versioned tags or inspect a candidate build before publishing, extend the tag and release strategy deliberately.
+The workflow uses GitHub's cache for build layers to make repeated refreshes quicker. The version tags are derived from the npm `wrangler` version resolved at workflow start and pushed alongside `latest` for both supported architectures.
 
 The Dockerfile currently installs `wrangler@latest`, so independent builds can resolve different Wrangler versions over time. Pin the Wrangler version and base-image tags/digests if reproducible builds are required, and update the documentation and smoke tests alongside that change.
 

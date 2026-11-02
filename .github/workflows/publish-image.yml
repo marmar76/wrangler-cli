@@ -32,6 +32,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Resolve the exact Wrangler version installed by `wrangler@latest` in
+      # the Dockerfile, then use it in immutable and rolling image tags.
+      - name: Resolve Wrangler version
+        id: wrangler
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(npm view wrangler version)"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "major_minor=${version%.*}" >> "$GITHUB_OUTPUT"
+          echo "Wrangler version for this image: ${version}"
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -44,6 +56,15 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: marmar76/wrangler-cli:latest
+          tags: |
+            marmar76/wrangler-cli:latest
+            marmar76/wrangler-cli:${{ steps.wrangler.outputs.version }}
+            marmar76/wrangler-cli:${{ steps.wrangler.outputs.major_minor }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          labels: |
+            org.opencontainers.image.title=Wrangler CLI container
+            org.opencontainers.image.description=Cloudflare Wrangler CLI in a trimmed multi-platform container image
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.wrangler.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
