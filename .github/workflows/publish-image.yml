@@ -34,6 +34,7 @@ jobs:
 
       # Resolve the exact Wrangler version installed by `wrangler@latest` in
       # the Dockerfile, then use it in immutable and rolling image tags.
+      # echo "major_minor=${version%.*}" >> "$GITHUB_OUTPUT"
       - name: Resolve Wrangler version
         id: wrangler
         shell: bash
@@ -41,7 +42,7 @@ jobs:
           set -euo pipefail
           version="$(npm view wrangler version)"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "major_minor=${version%.*}" >> "$GITHUB_OUTPUT"
+          
           echo "Wrangler version for this image: ${version}"
 
       - name: Log in to Docker Hub
