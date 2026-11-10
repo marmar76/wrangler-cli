@@ -59,8 +59,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            marmar76/wrangler-cli:latest
             marmar76/wrangler-cli:${{ steps.wrangler.outputs.version }}
+            marmar76/wrangler-cli:latest
+            
             
           cache-from: type=gha
           cache-to: type=gha,mode=max
