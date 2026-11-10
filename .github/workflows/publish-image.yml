@@ -35,6 +35,7 @@ jobs:
       # Resolve the exact Wrangler version installed by `wrangler@latest` in
       # the Dockerfile, then use it in immutable and rolling image tags.
       # echo "major_minor=${version%.*}" >> "$GITHUB_OUTPUT"
+      # marmar76/wrangler-cli:${{ steps.wrangler.outputs.major_minor }}
       - name: Resolve Wrangler version
         id: wrangler
         shell: bash
@@ -60,7 +61,7 @@ jobs:
           tags: |
             marmar76/wrangler-cli:latest
             marmar76/wrangler-cli:${{ steps.wrangler.outputs.version }}
-            marmar76/wrangler-cli:${{ steps.wrangler.outputs.major_minor }}
+            
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: |
