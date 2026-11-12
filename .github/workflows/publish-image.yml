@@ -60,7 +60,9 @@ jobs:
           push: true
           tags: |
             marmar76/wrangler-cli:${{ steps.wrangler.outputs.version }}
+            marmar76/wrangler:${{ steps.wrangler.outputs.version }}
             marmar76/wrangler-cli:latest
+            marmar76/wrangler:latest
             
             
           cache-from: type=gha
